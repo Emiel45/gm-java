@@ -17,7 +17,6 @@ public class Hooks {
 
 	@Subscribe
 	public void onNPCKilled(NPCKilledEvent e) {
-		System.out.println("NPCKilled!");
 		System.out.println(e.getKiller().getName() + " killed " + e.getVictim().getClassName() + " with a " + e.getWeapon().getClassName());
 		
 		Entity ent = e.getVictim();

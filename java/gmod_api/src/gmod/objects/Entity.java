@@ -32,7 +32,8 @@ public class Entity extends Lua.Object {
 		Lua.lock();
 		{
 			Lua.getfield(index, "Angle");
-			Lua.call(0, 1);
+			Lua.pushvalue(index);
+			Lua.call(1, 1);
 			ret_val = new Angle(Lua.gettop());
 		}
 		Lua.unlock();
@@ -50,6 +51,7 @@ public class Entity extends Lua.Object {
 			Lua.call(1, 1);
 			
 			ret_val = Lua.tostring(-1);
+			Lua.pop(1);
 		}
 		Lua.unlock();
 		
@@ -62,7 +64,8 @@ public class Entity extends Lua.Object {
 		Lua.lock();
 		{
 			Lua.getfield(index, "GetForward");
-			Lua.call(0, 1);
+			Lua.pushvalue(index);
+			Lua.call(1, 1);
 			ret_val = new Vector(Lua.gettop());
 		}
 		Lua.unlock();
@@ -80,6 +83,7 @@ public class Entity extends Lua.Object {
 			Lua.call(1, 1);
 			
 			ret_val = Lua.tostring(-1);
+			Lua.pop(1);
 		}
 		Lua.unlock();
 		
@@ -92,7 +96,8 @@ public class Entity extends Lua.Object {
 		Lua.lock();
 		{
 			Lua.getfield(index, "GetPos");
-			Lua.call(0, 1);
+			Lua.pushvalue(index);
+			Lua.call(1, 1);
 			ret_val = new Vector(Lua.gettop());
 		}
 		Lua.unlock();
@@ -104,8 +109,9 @@ public class Entity extends Lua.Object {
 		Lua.lock();
 		{
 			Lua.getfield(index, "SetPos");
+			Lua.pushvalue(index);
 			Lua.pushvalue(vector.index());
-			Lua.call(1, 0);
+			Lua.call(2, 0);
 		}
 		Lua.unlock();
 	}
