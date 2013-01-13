@@ -1,6 +1,7 @@
 package gmod.testing;
 
 import gmod.Entities;
+import gmod.events.InitializeEvent;
 import gmod.events.NPCKilledEvent;
 import gmod.objects.Entity;
 import gmod.objects.Vector;
@@ -10,7 +11,7 @@ import com.google.common.eventbus.Subscribe;
 public class Hooks {
 
 	@Subscribe
-	public void onInitialize() {
+	public void onInitialize(InitializeEvent e) {
 		System.out.println("Gamemode has initialized!");
 	}
 
