@@ -1,6 +1,7 @@
 package gmod.testing;
 
 import gmod.Entities;
+import gmod.Lua;
 import gmod.events.InitializeEvent;
 import gmod.events.NPCKilledEvent;
 import gmod.objects.Entity;
@@ -36,6 +37,8 @@ public class Hooks {
 		
 		newEnt.setPos(newPos);
 		System.out.println("Set pos");
+		
+		Lua.dump_stack();
 	}
 
 }
