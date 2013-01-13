@@ -10,8 +10,8 @@ public class Hook {
 		eventBus.register(o);
 	}
 	
-	public static void init() {
-		/*Lua.getglobal("hook");
+	/*public static void init() {
+		Lua.getglobal("hook");
 		Lua.getfield(-1, "Add");
 		
 		for(Type hookType : Type.values()) {
@@ -24,14 +24,14 @@ public class Hook {
 			Lua.pushclosure(handler, 1);
 			System.out.println("Hooking: " + hookType);
 			Lua.call(3, 0);
-		}*/
-	}
+		}
+	}*/
 
-	/*private static class Handler implements Lua.Function {
+	private static class Handler implements Lua.Function {
 
 		@Override
-		public int invoke() {
-			try {
+		public int invoke() throws Exception {
+			/*try {
 
 				Class<? extends Event> eventClass = hookType.getEventClass();
 				if(eventClass != null) {
@@ -44,10 +44,10 @@ public class Hook {
 				e.printStackTrace();
 			}
 			
-			return 0;
+			return 0;*/
 			return 0;
 		}
 		
-	}*/
+	}
 	
 }

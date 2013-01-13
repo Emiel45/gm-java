@@ -8,7 +8,7 @@ public class Lua {
 
 	public static interface Function {
 		
-		public int invoke();
+		public int invoke() throws Exception;
 		
 	}
 	
@@ -58,13 +58,18 @@ public class Lua {
 	
 	public static native void pushvalue(int index);
 	public static native void pushboolean(boolean b);
+	public static native void pushnumber(double n);
 	public static native void pushstring(String str);
 	public static native void pushobject(Object obj);
 	public static native void pushfunction(Function f);
 	public static native void pushclosure(Function f, int nargs);
 	
+	public static native void settop(int index);
+	public static void pop(int n) { settop(-n - 1); }
+	
 	public static native void call(int nargs, int nresults);
 	
+	public static native double tonumber(int index);
 	public static native String tostring(int index);
 	public static native Object toobject(int index);
 	

@@ -136,6 +136,15 @@ EXPORT void JNICALL Java_gmod_Lua_pushvalue(JNIEnv *env, jclass cls, jint index)
 	lua_unlock(L);
 }
 
+EXPORT void JNICALL Java_gmod_Lua_pushnumber(JNIEnv *env, jclass cls, jdouble n)
+{
+	lua_lock(L);
+	{
+		lua_pushnumber(L, n);
+	}
+	lua_unlock(L);
+}
+
 EXPORT void JNICALL Java_gmod_Lua_pushboolean(JNIEnv *env, jclass cls, jboolean b)
 {
 	lua_lock(L);
@@ -279,6 +288,15 @@ EXPORT void JNICALL Java_gmod_Lua_pushclosure(JNIEnv *env, jclass cls, jobject f
 	lua_unlock(L);
 }
 
+EXPORT void JNICALL Java_gmod_Lua_settop(JNIEnv *env, jclass cls, jint index)
+{
+	lua_lock(L);
+	{
+		lua_settop(L, index);
+	}
+	lua_unlock(L);
+}
+
 EXPORT void JNICALL Java_gmod_Lua_call(JNIEnv *env, jclass cls, jint nargs, jint nresults)
 {
 	lua_lock(L);
@@ -286,6 +304,19 @@ EXPORT void JNICALL Java_gmod_Lua_call(JNIEnv *env, jclass cls, jint nargs, jint
 		lua_call(L, nargs, nresults);
 	}
 	lua_unlock(L);
+}
+
+EXPORT jdouble JNICALL Java_gmod_Lua_tonumber(JNIEnv *env, jclass cls, jint index)
+{
+	jdouble ret_value;
+
+	lua_lock(L);
+	{
+		ret_value = lua_tonumber(L, index);
+	}
+	lua_unlock(L);
+
+	return ret_value;
 }
 
 EXPORT jstring JNICALL Java_gmod_Lua_tostring(JNIEnv *env, jclass cls, jint index)
