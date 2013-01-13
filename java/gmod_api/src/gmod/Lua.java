@@ -20,6 +20,10 @@ public class Lua {
 			this.index = index;
 		}
 		
+		public Object() {
+			this.index = Lua.gettop();
+		}
+		
 		@Override
 		public String toString() {
 			String ret_val;

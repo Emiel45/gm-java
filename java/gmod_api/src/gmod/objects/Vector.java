@@ -4,10 +4,17 @@ import gmod.Lua;
 
 public class Vector extends Lua.Object {
 	
-	// sec
-	
 	public Vector(int index) {
 		super(index);
+	}
+	
+	public Vector(double x, double y, double z) {
+		Lua.getglobal("Vector");
+		Lua.pushnumber(x);
+		Lua.pushnumber(y);
+		Lua.pushnumber(z);
+		Lua.call(3, 1);
+		this.index = Lua.gettop();
 	}
 	
 	public double getX() {

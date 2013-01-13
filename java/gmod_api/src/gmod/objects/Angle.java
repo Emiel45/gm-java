@@ -8,6 +8,15 @@ public class Angle extends Lua.Object {
 		super(index);
 	}
 	
+	public Angle(double p, double y, double r) {
+		Lua.getglobal("Angle");
+		Lua.pushnumber(p);
+		Lua.pushnumber(y);
+		Lua.pushnumber(r);
+		Lua.call(3, 1);
+		this.index = Lua.gettop();
+	}
+	
 	public double getPitch() {
 		double ret_val;
 		

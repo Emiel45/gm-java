@@ -1,5 +1,6 @@
 package gmod.testing;
 
+import gmod.Entities;
 import gmod.events.NPCKilledEvent;
 import gmod.objects.Entity;
 
@@ -18,6 +19,8 @@ public class Hooks {
 		System.out.println(e.getKiller().getName() + " killed " + e.getVictim().getClassName() + " with a " + e.getWeapon().getClassName());
 		
 		Entity ent = e.getVictim();
+		
+		Entity newEnt = Entities.create(ent.getClassName());
 	}
 
 }
