@@ -12,7 +12,7 @@ public class Entities {
 			Lua.getglobal("ents");
 			Lua.getfield(-1, "Create");
 			Lua.pushstring(className);
-			Lua.call(1, 0);
+			Lua.call(1, 1);
 			ret_val = new Entity();
 		}
 		Lua.unlock();
