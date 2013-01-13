@@ -1,6 +1,6 @@
 package gmod.testing;
 
-import gmod.lua.Hook;
+import gmod.Hook;
 
 public class Java {
 
