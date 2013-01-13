@@ -23,9 +23,16 @@ public class Hooks {
 		Entity killer = e.getKiller();
 		
 		Entity newEnt = Entities.create(ent.getClassName());
+		System.out.println("Created new entity");
+		
 		Vector newPos = new Vector(killer.getPos());
+		System.out.println("Cloned pos");
+		
 		newPos.add(new Vector(0, 0, 100));
+		System.out.println("Added 100 z to pos");
+		
 		newEnt.setPos(newPos);
+		System.out.println("Set pos");
 	}
 
 }

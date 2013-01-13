@@ -17,27 +17,19 @@ public class Hook {
 		eventBus.register(o);
 
 		for (Method m : o.getClass().getMethods()) {
-			if (!m.isAnnotationPresent(Subscribe.class)) {
-				System.out.println("Continuing because no subscribe");
+			if (!m.isAnnotationPresent(Subscribe.class))
 				continue;
-			}
 
-			if (m.getParameterTypes().length != 1) {
-				System.out.println("Continuing because params != 1");
+			if (m.getParameterTypes().length != 1)
 				continue;
-			}
 
 			Class<?> parmClass = m.getParameterTypes()[0];
-			if (!Event.class.isAssignableFrom(parmClass)) {
-				System.out.println("Continuing because parm not event");
+			if (!Event.class.isAssignableFrom(parmClass))
 				continue;
-			}
 
 			Class<? extends Event> eventClass = parmClass.asSubclass(Event.class);
-			if (!eventClass.isAnnotationPresent(Event.Info.class)) {
-				System.out.println("Continuing because no Event.Info");
+			if (!eventClass.isAnnotationPresent(Event.Info.class))
 				continue;
-			}
 
 			Event.Info eventInfo = eventClass.getAnnotation(Event.Info.class);
 			if (!registeredHooks.contains(eventInfo.name())) {

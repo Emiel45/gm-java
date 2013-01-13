@@ -18,12 +18,7 @@ public class Vector extends Lua.Object {
 	}
 	
 	public Vector(Vector vector) {
-		Lua.getglobal("Vector");
-		Lua.pushnumber(vector.getX());
-		Lua.pushnumber(vector.getY());
-		Lua.pushnumber(vector.getZ());
-		Lua.call(3, 1);
-		this.index = Lua.gettop();
+		this(vector.getX(), vector.getY(), vector.getZ());
 	}
 	
 	public double getX() {
