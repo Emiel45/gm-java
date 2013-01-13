@@ -81,4 +81,6 @@ public class Lua {
 	public static native String tostring(int index);
 	public static native java.lang.Object toobject(int index);
 	
+	public static native void dump_stack();
+	
 }

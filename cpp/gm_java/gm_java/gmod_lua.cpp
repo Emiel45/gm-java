@@ -345,3 +345,12 @@ EXPORT jobject JNICALL Java_gmod_Lua_toobject(JNIEnv *env, jclass cls, jint inde
 
 	return ret_value;
 }
+
+EXPORT void JNICALL Java_gmod_Lua_dump_stack(JNIEnv *env, jclass cls)
+{
+	lua_lock(L);
+	{
+		stackdump_g(L);
+	}
+	lua_unlock(L);
+}
