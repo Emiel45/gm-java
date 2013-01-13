@@ -60,7 +60,7 @@ public class Lua {
 	public static native void pushboolean(boolean b);
 	public static native void pushnumber(double n);
 	public static native void pushstring(String str);
-	public static native void pushobject(Object obj);
+	public static native void pushobject(java.lang.Object obj);
 	public static native void pushfunction(Function f);
 	public static native void pushclosure(Function f, int nargs);
 	
@@ -71,6 +71,6 @@ public class Lua {
 	
 	public static native double tonumber(int index);
 	public static native String tostring(int index);
-	public static native Object toobject(int index);
+	public static native java.lang.Object toobject(int index);
 	
 }
