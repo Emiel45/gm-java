@@ -40,6 +40,10 @@ public class Hook {
 		}
 	}
 
+	public static void unregister(Object o) {
+		eventBus.unregister(o);
+	}
+	
 	private static class Handler implements Lua.Function {
 
 		@Override
