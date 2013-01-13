@@ -91,13 +91,23 @@ public class Entity extends Lua.Object {
 		
 		Lua.lock();
 		{
-			Lua.getfield(index, "Angle");
+			Lua.getfield(index, "GetPos");
 			Lua.call(0, 1);
 			ret_val = new Vector(Lua.gettop());
 		}
 		Lua.unlock();
 		
 		return ret_val;
+	}
+	
+	public void setPos(Vector vector) {
+		Lua.lock();
+		{
+			Lua.getfield(index, "SetPos");
+			Lua.pushvalue(vector.index());
+			Lua.call(1, 0);
+		}
+		Lua.unlock();
 	}
 	
 }

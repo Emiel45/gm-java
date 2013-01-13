@@ -17,6 +17,15 @@ public class Vector extends Lua.Object {
 		this.index = Lua.gettop();
 	}
 	
+	public Vector(Vector vector) {
+		Lua.getglobal("Vector");
+		Lua.pushnumber(vector.getX());
+		Lua.pushnumber(vector.getY());
+		Lua.pushnumber(vector.getZ());
+		Lua.call(3, 1);
+		this.index = Lua.gettop();
+	}
+	
 	public double getX() {
 		double ret_val;
 		
@@ -36,6 +45,52 @@ public class Vector extends Lua.Object {
 		{
 			Lua.pushnumber(x);
 			Lua.setfield(index, "x");
+		}
+		Lua.unlock();
+	}
+	
+	public double getY() {
+		double ret_val;
+		
+		Lua.lock();
+		{
+			Lua.getfield(index, "y");
+			ret_val = Lua.tonumber(-1);
+			Lua.pop(1);
+		}
+		Lua.unlock();
+		
+		return ret_val;
+	}
+
+	public void setY(double y) {
+		Lua.lock();
+		{
+			Lua.pushnumber(y);
+			Lua.setfield(index, "y");
+		}
+		Lua.unlock();
+	}
+	
+	public double getZ() {
+		double ret_val;
+		
+		Lua.lock();
+		{
+			Lua.getfield(index, "z");
+			ret_val = Lua.tonumber(-1);
+			Lua.pop(1);
+		}
+		Lua.unlock();
+		
+		return ret_val;
+	}
+
+	public void setZ(double z) {
+		Lua.lock();
+		{
+			Lua.pushnumber(z);
+			Lua.setfield(index, "z");
 		}
 		Lua.unlock();
 	}

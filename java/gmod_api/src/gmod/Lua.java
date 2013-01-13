@@ -41,6 +41,10 @@ public class Lua {
 			return ret_val;
 		}
 		
+		public int index() {
+			return index;
+		}
+		
 	}
 	
 	public static final int GLOBALSINDEX = -10002;

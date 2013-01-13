@@ -1,6 +1,6 @@
-package gmod.testing;
+package gmod;
 
-import gmod.Hook;
+import gmod.testing.Hooks;
 
 public class Java {
 
