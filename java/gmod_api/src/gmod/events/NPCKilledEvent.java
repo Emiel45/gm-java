@@ -1,8 +1,8 @@
 package gmod.events;
 
-import gmod.Entity;
 import gmod.Event;
-import gmod.Lua;
+import gmod.lua.Lua;
+import gmod.lua.objects.Entity;
 
 @Event.Info(name = "OnNPCKilled")
 public class NPCKilledEvent extends Event {
