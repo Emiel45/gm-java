@@ -1,6 +1,6 @@
 package gmod;
 
-public class Entity extends LuaObject {
+public class Entity extends Lua.Object {
 	
 	protected Entity(int index) {
 		super(index);
@@ -41,24 +41,5 @@ public class Entity extends LuaObject {
 		
 		return ret_val;
 	}
-
-	@Override
-	public String toString() {
-		String ret_val;
-		
-		Lua.lock();
-		{
-			Lua.getglobal("tostring");
-			Lua.pushvalue(index);
-			Lua.call(1, 1);
-			
-			ret_val = Lua.tostring(-1);
-		}
-		Lua.unlock();
-		
-		return ret_val;
-	}
-	
-	
 	
 }

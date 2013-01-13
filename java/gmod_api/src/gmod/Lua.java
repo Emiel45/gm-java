@@ -12,6 +12,33 @@ public class Lua {
 		
 	}
 	
+	public static abstract class Object {
+
+		protected int index;
+		
+		public Object(int index) {
+			this.index = index;
+		}
+		
+		@Override
+		public String toString() {
+			String ret_val;
+			
+			Lua.lock();
+			{
+				Lua.getglobal("tostring");
+				Lua.pushvalue(index);
+				Lua.call(1, 1);
+				
+				ret_val = Lua.tostring(-1);
+			}
+			Lua.unlock();
+			
+			return ret_val;
+		}
+		
+	}
+	
 	public static final int GLOBALSINDEX = -10002;
 	
 	public static int upvalueindex(int index) {
@@ -40,4 +67,5 @@ public class Lua {
 	
 	public static native String tostring(int index);
 	public static native Object toobject(int index);
+	
 }
