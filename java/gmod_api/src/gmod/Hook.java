@@ -17,19 +17,27 @@ public class Hook {
 		eventBus.register(o);
 
 		for (Method m : o.getClass().getMethods()) {
-			if (!m.isAnnotationPresent(Subscribe.class))
+			if (!m.isAnnotationPresent(Subscribe.class)) {
+				System.out.println("Continuing because no subscribe");
 				continue;
+			}
 
-			if (m.getParameterTypes().length != 1)
+			if (m.getParameterTypes().length != 1) {
+				System.out.println("Continuing because params != 1");
 				continue;
+			}
 
 			Class<?> parmClass = m.getParameterTypes()[0];
-			if (!parmClass.isAssignableFrom(Event.class))
+			if (!parmClass.isAssignableFrom(Event.class)) {
+				System.out.println("Continuing because parm not event");
 				continue;
+			}
 
 			Class<? extends Event> eventClass = parmClass.asSubclass(Event.class);
-			if (!eventClass.isAnnotationPresent(Event.Info.class))
+			if (!eventClass.isAnnotationPresent(Event.Info.class)) {
+				System.out.println("Continuing because no Event.Info");
 				continue;
+			}
 
 			Event.Info eventInfo = eventClass.getAnnotation(Event.Info.class);
 			if (!registeredHooks.contains(eventInfo.name())) {
@@ -41,6 +49,7 @@ public class Hook {
 				Lua.pushclosure(handler, 1);
 				System.out.println("Hooking " + eventInfo.name() + " (" + eventClass.getName() + ")...");
 				Lua.call(3, 0);
+				registeredHooks.add(eventInfo.name());
 			}
 		}
 	}

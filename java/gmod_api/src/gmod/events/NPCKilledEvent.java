@@ -9,8 +9,7 @@ public class NPCKilledEvent extends Event {
 
 	private Entity victim, killer, weapon;
 	
-	@Override
-	public void parse() {
+	public NPCKilledEvent() {
 		Lua.lock();
 		{
 			this.victim = Entity.parse(1);
