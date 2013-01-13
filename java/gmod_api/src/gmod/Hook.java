@@ -56,8 +56,6 @@ public class Hook {
 			Class<? extends Event> eventClass = ((Class<?>) Lua.toobject(Lua.upvalueindex(1))).asSubclass(Event.class);
 			if (eventClass != null) {
 				Event event = eventClass.newInstance();
-				event.parse();
-
 				eventBus.post(event);
 			}
 
