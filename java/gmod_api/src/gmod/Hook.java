@@ -28,7 +28,7 @@ public class Hook {
 			}
 
 			Class<?> parmClass = m.getParameterTypes()[0];
-			if (!parmClass.isAssignableFrom(Event.class)) {
+			if (!Event.class.isAssignableFrom(parmClass)) {
 				System.out.println("Continuing because parm not event");
 				continue;
 			}
