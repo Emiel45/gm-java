@@ -31,6 +31,9 @@ public class Hooks {
 		newPos.add(new Vector(0, 0, 100));
 		System.out.println("Added 100 z to pos");
 		
+		System.out.println("Index of newEnt: " + newEnt.index());
+		System.out.println("Index of newPos: " + newPos.index());
+		
 		newEnt.setPos(newPos);
 		System.out.println("Set pos");
 	}
