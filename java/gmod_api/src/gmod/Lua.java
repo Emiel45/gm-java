@@ -8,7 +8,7 @@ public class Lua {
 
 	public static interface Function {
 		
-		public int invoke() throws Exception;
+		public int invoke() throws java.lang.Exception;
 		
 	}
 	
@@ -47,6 +47,15 @@ public class Lua {
 		
 	}
 	
+	@SuppressWarnings("serial")
+	public static class Exception extends java.lang.Exception {
+		
+		public Exception(String message) {
+			super(message);
+		}
+		
+	}
+	
 	public static final int GLOBALSINDEX = -10002;
 	
 	public static int upvalueindex(int index) {
@@ -65,6 +74,7 @@ public class Lua {
 	public static native int gettop();
 	
 	public static native void pushvalue(int index);
+	public static native void pushnil();
 	public static native void pushboolean(boolean b);
 	public static native void pushnumber(double n);
 	public static native void pushstring(String str);
@@ -77,6 +87,7 @@ public class Lua {
 	
 	public static native void call(int nargs, int nresults);
 	
+	public static native int tointeger(int index);
 	public static native double tonumber(int index);
 	public static native String tostring(int index);
 	public static native java.lang.Object toobject(int index);

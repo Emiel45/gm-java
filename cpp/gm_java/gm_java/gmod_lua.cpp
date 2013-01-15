@@ -17,6 +17,8 @@ lua_State *L;
 jclass class_lua_Function;
 jmethodID method_lua_Function_invoke;
 
+jclass class_lua_Exception;
+
 int jobject__gc(lua_State *lua)
 {
 	jobject obj = *(jobject *) lua_touserdata(L, 1);
@@ -69,6 +71,8 @@ int gmod_lua_init(lua_State *lua)
 	/* Lookup classes & methods */
 	class_lua_Function = jclass_find_global("gmod/Lua$Function");
 	method_lua_Function_invoke = env->GetMethodID(class_lua_Function, "invoke", "()I");
+	
+	class_lua_Exception = jclass_find_global("gmod/Lua$Exception");
 
 	/* Register process async hook */
 	lua_getglobal(L, "hook");
@@ -81,6 +85,16 @@ int gmod_lua_init(lua_State *lua)
 	return 0;
 }
 
+/* lua lock functionality for async operations */
+#define lua_checklock(L)											\
+{																	\
+	if(!lua_haslock(L))												\
+	{																\
+		env->ThrowNew(class_lua_Exception, "No lock accuired.");	\
+		RETURN;														\
+	}																\
+}																	\
+
 EXPORT void JNICALL Java_gmod_Lua_lock(JNIEnv *env, jclass cls)
 {
 	lua_lock(L);
@@ -91,17 +105,41 @@ EXPORT void JNICALL Java_gmod_Lua_unlock(JNIEnv *env, jclass cls)
 	lua_unlock(L);
 }
 
+/* lua_jcall() */
+void lua_jcall(lua_State *L, int nargs, int nresults)
+{
+	int status = lua_pcall(L, nargs, nresults, 0);
+	if(status != 0) {
+		env->ThrowNew(class_lua_Exception, lua_tostring(L, -1));
+	}
+}
+
+/* lua_absindex() */
+#define lua_absindex(L, index) (index > 0 || index <= LUA_REGISTRYINDEX) ? (index) : (lua_gettop(L) + index + 1)
+
+/* lua_getfield() */
+const char *p_lua_getfield_k;
+int p_lua_getfield(lua_State *L)
+{
+	lua_getfield(L, 1, p_lua_getfield_k);
+	return 1;
+}
+
+#define RETURN return
 EXPORT void JNICALL Java_gmod_Lua_getfield(JNIEnv *env, jclass cls, jint index, jstring name)
 {
-	lua_lock(L);
-	{
-		const char *name_utf = env->GetStringUTFChars(name, JNI_FALSE);
-		lua_getfield(L, int(index), name_utf);
-		env->ReleaseStringUTFChars(name, name_utf);
-	}
-	lua_unlock(L);
+	lua_checklock(L);
 
+	p_lua_getfield_k = env->GetStringUTFChars(name, JNI_FALSE);
+	
+	index = lua_absindex(L, index);
+	lua_pushcfunction(L, p_lua_getfield);
+	lua_pushvalue(L, index);
+	lua_jcall(L, 1, 1);
+
+	env->ReleaseStringUTFChars(name, p_lua_getfield_k);
 }
+#define VOIC_FUN false
 
 EXPORT void JNICALL Java_gmod_Lua_setfield(JNIEnv *env, jclass cls, jint index, jstring name)
 {
@@ -132,6 +170,15 @@ EXPORT void JNICALL Java_gmod_Lua_pushvalue(JNIEnv *env, jclass cls, jint index)
 	lua_lock(L);
 	{
 		lua_pushvalue(L, index);
+	}
+	lua_unlock(L);
+}
+
+EXPORT void JNICALL Java_gmod_Lua_pushnil(JNIEnv *env, jclass cls)
+{
+	lua_lock(L);
+	{
+		lua_pushnil(L);
 	}
 	lua_unlock(L);
 }
@@ -306,6 +353,19 @@ EXPORT void JNICALL Java_gmod_Lua_call(JNIEnv *env, jclass cls, jint nargs, jint
 	lua_unlock(L);
 }
 
+EXPORT jint JNICALL Java_gmod_Lua_tointeger(JNIEnv *env, jclass cls, jint index)
+{
+	jint ret_value;
+
+	lua_lock(L);
+	{
+		ret_value = lua_tointeger(L, index);
+	}
+	lua_unlock(L);
+
+	return ret_value;
+}
+
 EXPORT jdouble JNICALL Java_gmod_Lua_tonumber(JNIEnv *env, jclass cls, jint index)
 {
 	jdouble ret_value;
@@ -346,7 +406,7 @@ EXPORT jobject JNICALL Java_gmod_Lua_toobject(JNIEnv *env, jclass cls, jint inde
 	return ret_value;
 }
 
-EXPORT void JNICALL Java_gmod_Lua_dump_stack(JNIEnv *env, jclass cls)
+EXPORT void JNICALL Java_gmod_Lua_dump_1stack(JNIEnv *env, jclass cls)
 {
 	lua_lock(L);
 	{
