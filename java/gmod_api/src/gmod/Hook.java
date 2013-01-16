@@ -53,11 +53,18 @@ public class Hook {
 	private static class Handler implements Lua.Function {
 
 		@Override
-		public int invoke() throws Exception {
+		public int invoke(int nargs, int nresults) {
 			Class<? extends Event> eventClass = ((Class<?>) Lua.toobject(Lua.upvalueindex(1))).asSubclass(Event.class);
 			if (eventClass != null) {
-				Event event = eventClass.newInstance();
-				eventBus.post(event);
+				Event event;
+				try {
+					event = eventClass.newInstance();
+					eventBus.post(event);
+				} catch (InstantiationException e) {
+					e.printStackTrace();
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
+				}
 			}
 
 			return 0;

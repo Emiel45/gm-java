@@ -2,6 +2,8 @@ package gmod.objects;
 
 import gmod.Lua;
 
+import static gmod.Lua.Table._G;
+
 public class Vector extends Lua.Object {
 	
 	public Vector(int index) {
@@ -9,12 +11,7 @@ public class Vector extends Lua.Object {
 	}
 	
 	public Vector(double x, double y, double z) {
-		Lua.getglobal("Vector");
-		Lua.pushnumber(x);
-		Lua.pushnumber(y);
-		Lua.pushnumber(z);
-		Lua.call(3, 1);
-		this.index = Lua.gettop();
+		super(_G.invokeObject("Vector", x, y, z).index());
 	}
 	
 	public Vector(Vector vector) {
@@ -22,75 +19,35 @@ public class Vector extends Lua.Object {
 	}
 	
 	public double getX() {
-		double ret_val;
-	
-		Lua.getfield(index, "x");
-		ret_val = Lua.tonumber(-1);
-		Lua.pop(1);
-		
-		return ret_val;
+		return super.getFieldNumber("x");
 	}
 
 	public void setX(double x) {
-		Lua.pushnumber(x);
-		Lua.setfield(index, "x");
+		super.setField("x", x);
 	}
 	
 	public double getY() {
-		double ret_val;
-		
-		Lua.getfield(index, "y");
-		ret_val = Lua.tonumber(-1);
-		Lua.pop(1);
-		
-		return ret_val;
+		return super.getFieldNumber("y");
 	}
 
 	public void setY(double y) {
-		Lua.pushnumber(y);
-		Lua.setfield(index, "y");
+		super.setField("y", y);
 	}
 	
 	public double getZ() {
-		double ret_val;
-		
-		Lua.getfield(index, "z");
-		ret_val = Lua.tonumber(-1);
-		Lua.pop(1);
-		
-		return ret_val;
+		return super.getFieldNumber("Z");
 	}
 
 	public void setZ(double z) {
-		Lua.pushnumber(z);
-		Lua.setfield(index, "z");
+		super.setField("z", z);
 	}
 	
-	public void add(Vector vector) {
-		Lua.getfield(index, "Add");
-		Lua.pushvalue(index);
-		Lua.pushvalue(vector.index);
-		Lua.call(2, 0);
+	public void add(Vector v) {
+		super.call("Add", v);
 	}
 	
-	public double distance(Vector vector) {
-		double ret_val;
-		
-		Lua.getfield(index, "Distance");
-		Lua.pushvalue(index);
-		Lua.pushvalue(vector.index);
-		Lua.call(2, 1);
-		ret_val = Lua.tonumber(-1);
-		Lua.pop(1);
-		
-		return ret_val;
-	}
-	
-	public void mul(double value) {
-		Lua.getfield(index, "Mul");
-		Lua.pushvalue(index);
-		Lua.pushnumber(value);
-		Lua.call(2, 0);
+	public Angle angle() {
+		return new Angle(super.callObject("Angle").index());
 	}
 	
 }

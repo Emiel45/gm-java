@@ -10,7 +10,5 @@ public class Hooks {
 	public void onInitialize(InitializeEvent e) {
 		System.out.println("Gamemode has initialized!");
 	}
-
-	
 	
 }

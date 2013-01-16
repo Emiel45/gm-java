@@ -183,20 +183,29 @@ EXPORT void JNICALL Java_gmod_Lua_pushnil(JNIEnv *env, jclass cls)
 	lua_unlock(L);
 }
 
-EXPORT void JNICALL Java_gmod_Lua_pushnumber(JNIEnv *env, jclass cls, jdouble n)
-{
-	lua_lock(L);
-	{
-		lua_pushnumber(L, n);
-	}
-	lua_unlock(L);
-}
-
 EXPORT void JNICALL Java_gmod_Lua_pushboolean(JNIEnv *env, jclass cls, jboolean b)
 {
 	lua_lock(L);
 	{
 		lua_pushboolean(L, b);
+	}
+	lua_unlock(L);
+}
+
+EXPORT void JNICALL Java_gmod_Lua_pushinteger(JNIEnv *env, jclass cls, jint i)
+{
+	lua_lock(L);
+	{
+		lua_pushinteger(L, i);
+	}
+	lua_unlock(L);
+}
+
+EXPORT void JNICALL Java_gmod_Lua_pushnumber(JNIEnv *env, jclass cls, jdouble n)
+{
+	lua_lock(L);
+	{
+		lua_pushnumber(L, n);
 	}
 	lua_unlock(L);
 }
@@ -223,11 +232,12 @@ EXPORT void JNICALL Java_gmod_Lua_pushobject(JNIEnv *env, jclass cls, jobject ob
 }
 
 jobject java_function_obj;
+jint java_function_nargs;
 int java_function_results;
 
 int call_java_function_enclosed(lua_State *L)
 {
-	java_function_results = env->CallIntMethod(java_function_obj, method_lua_Function_invoke);
+	java_function_results = env->CallIntMethod(java_function_obj, method_lua_Function_invoke, java_function_nargs, -1);
 	return java_function_results;
 }
 
@@ -265,8 +275,8 @@ int call_java_function(lua_State *L)
 	luaL_checkudata(L, lua_upvalueindex(1), JOBJECT_MT);
 	luaL_checkint(L, lua_upvalueindex(2));
 	
-	int nargs = lua_tointeger(L, lua_upvalueindex(2));
-	for(int i = 0; i < nargs; i++) 
+	java_function_nargs = lua_tointeger(L, lua_upvalueindex(2));
+	for(int i = 0; i < java_function_nargs; i++) 
 	{
 		luaL_checkany(L, lua_upvalueindex(3 + i));
 	}
@@ -281,11 +291,12 @@ int call_java_function(lua_State *L)
 		lua_error(L);
 	}
 
-	for(int i = 0; i < nargs; i++)
+
+	for(int i = 0; i < java_function_nargs; i++)
 	{
 		lua_pushvalue(L, lua_upvalueindex(3 + i));
 	}
-	lua_pushcclosure(L, call_java_function_enclosed, nargs);
+	lua_pushcclosure(L, call_java_function_enclosed, java_function_nargs);
 
 	for(int i = 0; i < nargs_direct; i++)
 	{
@@ -351,6 +362,19 @@ EXPORT void JNICALL Java_gmod_Lua_call(JNIEnv *env, jclass cls, jint nargs, jint
 		lua_call(L, nargs, nresults);
 	}
 	lua_unlock(L);
+}
+
+EXPORT jboolean JNICALL Java_gmod_Lua_toboolean(JNIEnv *env, jclass cls, jint index)
+{
+	jboolean ret_value;
+
+	lua_lock(L);
+	{
+		ret_value = lua_toboolean(L, index);
+	}
+	lua_unlock(L);
+
+	return ret_value;
 }
 
 EXPORT jint JNICALL Java_gmod_Lua_tointeger(JNIEnv *env, jclass cls, jint index)
