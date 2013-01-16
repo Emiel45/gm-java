@@ -1,5 +1,8 @@
 package gmod;
 
+import java.util.Collection;
+import java.util.Iterator;
+
 public class Lua {
 
 	static {
@@ -21,10 +24,32 @@ public class Lua {
 		@Override
 		public int invoke(int nargs, int nresults) {
 			int top = Lua.gettop();
+			Lua.pushvalue(index);
+			for(int i = 0; i < nargs; i++) {
+				Lua.pushvalue(-nargs - 1);
+				Lua.remove(-nargs - 2);
+			}
 			Lua.call(nargs, nresults);
 			return Lua.gettop() - top;
 		}
 
+	}
+	
+	public static class Closure extends Object implements Function {
+		
+		public Closure(int index) {
+			super(index);
+		}
+		
+		
+
+		@Override
+		public int invoke(int nargs, int nresults) {
+			int top = Lua.gettop();
+			Lua.call(nargs, nresults);
+			return Lua.gettop() - top;
+		}
+		
 	}
 
 	public static class Object {
@@ -112,56 +137,47 @@ public class Lua {
 
 			for (int i = 0; i < args.length; i++) {
 				java.lang.Object arg = args[i];
-				Class<?> argClass = arg.getClass();
 
-				if (argClass == Boolean.class) {
+				if (Boolean.class.isInstance(arg)) {
 					Lua.pushboolean((Boolean) arg);
 					continue;
 				}
 
-				if (argClass == Integer.class) {
+				if (Integer.class.isInstance(arg)) {
 					Lua.pushinteger((Integer) arg);
 					continue;
 				}
 
-				if (argClass == Double.class) {
+				if (Double.class.isInstance(arg)) {
 					Lua.pushnumber((Double) arg);
 					continue;
 				}
 
-				if (argClass == String.class) {
+				if (String.class.isInstance(arg)) {
 					Lua.pushstring((String) arg);
 					continue;
 				}
 
-				if (argClass == Function.class) {
-					Lua.pushfunction((Function) arg);
-					continue;
-				}
-
-				if (argClass == Object.class) {
+				if (Object.class.isInstance(arg)) {
 					Lua.pushvalue(((Object) arg).index);
 					continue;
 				}
+
+				if (Function.class.isInstance(arg)) {
+					Lua.pushfunction((Function) arg);
+					continue;
+				}
 				
-				throw new Error("Invalid argument (" + i + ")");
+				throw new Error("Invalid argument (" + i + ") of " + arg.getClass());
 			}
 			return f.invoke(args.length, nresults);
-		}
-		
-		public int invoke(String name, java.lang.Object... args) {
-			return this.invoke(name, -1, args);
 		}
 
 		public int call(int nresults, String name, java.lang.Object... args) {
 			java.lang.Object[] newArgs = new java.lang.Object[args.length + 1];
 			System.arraycopy(args, 0, newArgs, 1, args.length);
 			newArgs[0] = this;
-			return this.invoke(name, nresults, newArgs);
-		}
-
-		public int call(String name, java.lang.Object... args) {
-			return this.call(name, -1, args);
+			return this.invoke(nresults, name, newArgs);
 		}
 		
 		public void invokeVoid(String name, java.lang.Object... args) {
@@ -272,6 +288,131 @@ public class Lua {
 		}
 
 	}
+	
+	public static class Array extends Table implements Collection<Object> {
+
+		private class ArrayIterator implements Iterator<Object> {
+
+			private int pos = 0;
+			private Array array;
+			
+			private int lastElement = -1;
+			
+			public ArrayIterator(Array array) {
+				this.array = array;
+			}
+			
+			@Override
+			public boolean hasNext() {
+				return pos < array.size();
+			}
+
+			@Override
+			public Object next() {
+				
+				// TODO IMPLEMENT THIS ASAP
+//				if(lastElement != -1) {
+//					if(lastElement != Lua.gettop()) {
+//						throw new Error("You corrupted the stack! (" + lastElement + " != " + Lua.gettop() + ")");
+//					}
+//					
+//					Lua.pop(1);
+//				}
+				
+				pos++;
+				Lua.pushinteger(pos);
+				Lua.gettable(array.index());
+				this.lastElement = Lua.gettop();
+				return new Object(lastElement);
+			}
+
+			@Override
+			public void remove() {
+				// TODO implement this?
+				throw new UnsupportedOperationException();
+			}
+			
+		}
+		
+		public Array(int index) {
+			super(index);
+		}
+
+		@Override
+		public int size() {
+			return Lua.objlen(index);
+		}
+
+		@Override
+		public boolean isEmpty() {
+			return this.size() == 0;
+		}
+
+		@Override
+		public boolean contains(java.lang.Object o) {
+			// TODO implement this?
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public Iterator<Object> iterator() {
+			return new ArrayIterator(this);
+		}
+		
+		@Override
+		public <T> T[] toArray(T[] a) {
+			// TODO implement this?
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public java.lang.Object[] toArray() {
+			// TODO implement this?
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean add(Object e) {
+			// TODO implement this?
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean remove(java.lang.Object o) {
+			// TODO implement this?
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean containsAll(Collection<?> c) {
+			// TODO implement this?
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean addAll(Collection<? extends Object> c) {
+			// TODO implement this?
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean removeAll(Collection<?> c) {
+			// TODO implement this?
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean retainAll(Collection<?> c) {
+			// TODO implement this?
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void clear() {
+			// TODO implement this?
+			throw new UnsupportedOperationException();
+		}
+	}
 
 	@SuppressWarnings("serial")
 	public static class Exception extends java.lang.Exception {
@@ -309,7 +450,13 @@ public class Lua {
 		setfield(GLOBALSINDEX, name);
 	}
 
+	public static native void gettable(int index);
+
 	public static native int gettop();
+	
+	public static native void settop(int index);
+
+	public static native void remove(int index);
 
 	public static native void pushvalue(int index);
 
@@ -329,8 +476,6 @@ public class Lua {
 
 	public static native void pushclosure(Function f, int nargs);
 
-	public static native void settop(int index);
-
 	public static void pop(int n) {
 		settop(-n - 1);
 	}
@@ -346,6 +491,8 @@ public class Lua {
 	public static native String tostring(int index);
 
 	public static native java.lang.Object toobject(int index);
+
+	public static native int objlen(int index);
 
 	public static native void dump_stack();
 

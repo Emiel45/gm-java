@@ -10,4 +10,8 @@ public class Player extends Entity {
 		return super.callInteger("UniqueID");
 	}
 	
+	public void chatPrint(String message) {
+		super.callVoid("ChatPrint", message);
+	}
+	
 }

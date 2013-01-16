@@ -43,7 +43,7 @@ public class Vector extends Lua.Object {
 	}
 	
 	public void add(Vector v) {
-		super.call("Add", v);
+		super.callVoid("Add", v);
 	}
 	
 	public Angle angle() {

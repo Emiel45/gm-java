@@ -1,17 +1,18 @@
 package gmod;
 
 import java.lang.reflect.Method;
-import java.util.Set;
+import java.util.Map;
 
-import com.google.common.collect.Sets;
+import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
+import static gmod.Lua.Table._G;
+
 public class Hook {
 
-	private static final Handler handler = new Handler();
 	private static final EventBus eventBus = new EventBus();
-	private static final Set<String> registeredHooks = Sets.newHashSet();
+	private static final Map<String, Handler> eventHandlers = Maps.newHashMap();
 
 	public static void register(Object o) {
 		eventBus.register(o);
@@ -32,16 +33,10 @@ public class Hook {
 				continue;
 
 			Event.Info eventInfo = eventClass.getAnnotation(Event.Info.class);
-			if (!registeredHooks.contains(eventInfo.name())) {
-				Lua.getglobal("hook");
-				Lua.getfield(-1, "Add");
-				Lua.pushstring(eventInfo.name());
-				Lua.pushstring("java." + eventClass.getName());
-				Lua.pushobject(eventClass);
-				Lua.pushclosure(handler, 1);
-				System.out.println("Hooking " + eventInfo.name() + " (" + eventClass.getName() + ")...");
-				Lua.call(3, 0);
-				registeredHooks.add(eventInfo.name());
+			if (!eventHandlers.containsKey(eventInfo.name())) {
+				Handler eventHandler = new Handler(eventClass);
+				eventHandlers.put(eventInfo.name(), eventHandler);
+				_G.getFieldTable("hook").invokeVoid("Add", eventInfo.name(), "java." + eventClass.getName(), eventHandler);
 			}
 		}
 	}
@@ -52,19 +47,22 @@ public class Hook {
 
 	private static class Handler implements Lua.Function {
 
+		private Class<? extends Event> eventClass;
+		
+		public Handler(Class<? extends Event> eventClass) {
+			this.eventClass = eventClass;
+		}
+		
 		@Override
 		public int invoke(int nargs, int nresults) {
-			Class<? extends Event> eventClass = ((Class<?>) Lua.toobject(Lua.upvalueindex(1))).asSubclass(Event.class);
-			if (eventClass != null) {
-				Event event;
-				try {
-					event = eventClass.newInstance();
-					eventBus.post(event);
-				} catch (InstantiationException e) {
-					e.printStackTrace();
-				} catch (IllegalAccessException e) {
-					e.printStackTrace();
-				}
+			Event event;
+			try {
+				event = eventClass.newInstance();
+				eventBus.post(event);
+			} catch (InstantiationException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
 			}
 
 			return 0;
