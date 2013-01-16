@@ -17,103 +17,63 @@ public class Entity extends Lua.Object {
 	}
 	
 	public void activate() {
-		Lua.lock();
-		{
-			Lua.getfield(index, "Activate");
-			Lua.pushvalue(index);
-			Lua.call(1, 0);
-		}
-		Lua.unlock();
+		Lua.getfield(index, "Activate");
+		Lua.pushvalue(index);
+		Lua.call(1, 0);
 	}
 	
 	public Angle getAngle() {
-		Angle ret_val;
-		
-		Lua.lock();
-		{
-			Lua.getfield(index, "Angle");
-			Lua.pushvalue(index);
-			Lua.call(1, 1);
-			ret_val = new Angle(Lua.gettop());
-		}
-		Lua.unlock();
-		
-		return ret_val;
+		Lua.getfield(index, "Angle");
+		Lua.pushvalue(index);
+		Lua.call(1, 1);
+		return new Angle(Lua.gettop());
 	}
 	
 	public String getClassName() {
 		String ret_val;
 		
-		Lua.lock();
-		{
-			Lua.getfield(index, "GetClass");
-			Lua.pushvalue(index);
-			Lua.call(1, 1);
-			
-			ret_val = Lua.tostring(-1);
-			Lua.pop(1);
-		}
-		Lua.unlock();
+		Lua.getfield(index, "GetClass");
+		Lua.pushvalue(index);
+		Lua.call(1, 1);
+		
+		ret_val = Lua.tostring(-1);
+		Lua.pop(1);
 		
 		return ret_val;
 	}
 	
 	public Vector getForward() {
-		Vector ret_val;
-		
-		Lua.lock();
-		{
-			Lua.getfield(index, "GetForward");
-			Lua.pushvalue(index);
-			Lua.call(1, 1);
-			ret_val = new Vector(Lua.gettop());
-		}
-		Lua.unlock();
-		
-		return ret_val;
+		Lua.getfield(index, "GetForward");
+		Lua.pushvalue(index);
+		Lua.call(1, 1);
+		return new Vector(Lua.gettop());
 	}
 	
 	public String getName() {
 		String ret_val;
 		
-		Lua.lock();
-		{
-			Lua.getfield(index, "GetName");
-			Lua.pushvalue(index);
-			Lua.call(1, 1);
-			
-			ret_val = Lua.tostring(-1);
-			Lua.pop(1);
-		}
-		Lua.unlock();
+		Lua.getfield(index, "GetName");
+		Lua.pushvalue(index);
+		Lua.call(1, 1);
+		
+		ret_val = Lua.tostring(-1);
+		Lua.pop(1);
 		
 		return ret_val;
 	}
 	
 	public Vector getPos() {
-		Vector ret_val;
-		
-		Lua.lock();
-		{
-			Lua.getfield(index, "GetPos");
-			Lua.pushvalue(index);
-			Lua.call(1, 1);
-			ret_val = new Vector(Lua.gettop());
-		}
-		Lua.unlock();
-		
-		return ret_val;
+		Lua.getfield(index, "GetPos");
+		Lua.pushvalue(index);
+		Lua.call(1, 1);
+		return new Vector(Lua.gettop());
 	}
 	
 	public void setPos(Vector vector) {
-		Lua.lock();
-		{
-			Lua.getfield(index, "SetPos");
-			Lua.pushvalue(index);
-			Lua.pushvalue(vector.index());
-			Lua.call(2, 0);
-		}
-		Lua.unlock();
+		Lua.getfield(index, "SetPos");
+		Lua.pushvalue(index);
+		Lua.pushvalue(vector.index());
+		Lua.call(2, 0);
 	}
 	
 }

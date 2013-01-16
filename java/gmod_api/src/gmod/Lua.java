@@ -28,15 +28,11 @@ public class Lua {
 		public String toString() {
 			String ret_val;
 			
-			Lua.lock();
-			{
-				Lua.getglobal("tostring");
-				Lua.pushvalue(index);
-				Lua.call(1, 1);
-				
-				ret_val = Lua.tostring(-1);
-			}
-			Lua.unlock();
+			Lua.getglobal("tostring");
+			Lua.pushvalue(index);
+			Lua.call(1, 1);
+			
+			ret_val = Lua.tostring(-1);
 			
 			return ret_val;
 		}
