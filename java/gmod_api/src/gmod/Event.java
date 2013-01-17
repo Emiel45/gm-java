@@ -15,4 +15,14 @@ public abstract class Event {
 		
 	}
 	
+	private Object[] returnValues = new Object[0];
+
+	public Object[] getReturnValues() {
+		return returnValues;
+	}
+
+	public void setReturnValues(Object... returnValues) {
+		this.returnValues = returnValues;
+	}
+	
 }

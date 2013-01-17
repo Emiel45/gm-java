@@ -1,7 +1,11 @@
 package gmod;
 
+import java.lang.reflect.Constructor;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Random;
+
+import static gmod.Lua.Table._G;
 
 public class Lua {
 
@@ -15,43 +19,40 @@ public class Lua {
 
 	}
 
-	private static class LuaFunction extends Object implements Function {
-
-		public LuaFunction(int index) {
-			super(index);
+	public static class Ref<T extends Object> {
+		
+		private static final Random random = new Random();
+		
+		private int id;
+		private Class<? extends Object> objClass;
+		
+		public Ref(T obj) {
+			this.id = random.nextInt();
+			this.objClass = obj.getClass();
+			
+			Lua.Table java = _G.getFieldTable("java");
+			java.invokeVoid("setref", id, obj);
+			java.pop();
 		}
+		
+		@SuppressWarnings("unchecked")
+		public T get() {
+			Lua.Table java = _G.getFieldTable("java");
+			java.invokeVoid("getref", id);
+			Lua.remove(java.index);
 
-		@Override
-		public int invoke(int nargs, int nresults) {
-			int top = Lua.gettop();
-			Lua.pushvalue(index);
-			for(int i = 0; i < nargs; i++) {
-				Lua.pushvalue(-nargs - 1);
-				Lua.remove(-nargs - 2);
+			try {
+				Constructor<? extends Object> constructor = objClass.getConstructor(int.class);
+				return (T) constructor.newInstance(Lua.gettop());
+			} catch (java.lang.Exception e) {
+				e.printStackTrace();
 			}
-			Lua.call(nargs, nresults);
-			return Lua.gettop() - top;
+			
+			return null;
 		}
-
+		
 	}
 	
-	public static class Closure extends Object implements Function {
-		
-		public Closure(int index) {
-			super(index);
-		}
-		
-		
-
-		@Override
-		public int invoke(int nargs, int nresults) {
-			int top = Lua.gettop();
-			Lua.call(nargs, nresults);
-			return Lua.gettop() - top;
-		}
-		
-	}
-
 	public static class Object {
 
 		protected int index;
@@ -92,9 +93,9 @@ public class Lua {
 			return ret_value;
 		}
 
-		public Function getFieldFunction(String name) {
+		public Object getFieldObject(String name) {
 			Lua.getfield(index, name);
-			return new LuaFunction(Lua.gettop());
+			return new Object(Lua.gettop());
 		}
 
 		public Table getFieldTable(String name) {
@@ -133,8 +134,13 @@ public class Lua {
 		}
 
 		public int invoke(int nresults, String name, java.lang.Object... args) {
-			Function f = this.getFieldFunction(name);
-
+			/* store top */
+			int top = Lua.gettop();
+			
+			/* push function on the stack */
+			Lua.getfield(index, name);
+			
+			/* push args on the stack */
 			for (int i = 0; i < args.length; i++) {
 				java.lang.Object arg = args[i];
 
@@ -170,7 +176,10 @@ public class Lua {
 				
 				throw new Error("Invalid argument (" + i + ") of " + arg.getClass());
 			}
-			return f.invoke(args.length, nresults);
+			
+			Lua.call(args.length, nresults);
+			
+			return Lua.gettop() - top;
 		}
 
 		public int call(int nresults, String name, java.lang.Object... args) {
@@ -273,6 +282,14 @@ public class Lua {
 			return ret_val;
 		}
 
+		public void pop() {
+			if(index != Lua.gettop()) {
+				throw new Error("Object is not on top of the stack! (" + index + " != " + Lua.gettop() + ")");
+			}
+			Lua.pop(1);
+			this.index = 0;
+		}
+		
 		public int index() {
 			return index;
 		}
@@ -289,14 +306,13 @@ public class Lua {
 
 	}
 	
+	// TODO Array<T> (seriously, do it)
 	public static class Array extends Table implements Collection<Object> {
 
 		private class ArrayIterator implements Iterator<Object> {
 
 			private int pos = 0;
 			private Array array;
-			
-			private int lastElement = -1;
 			
 			public ArrayIterator(Array array) {
 				this.array = array;
@@ -309,21 +325,10 @@ public class Lua {
 
 			@Override
 			public Object next() {
-				
-				// TODO IMPLEMENT THIS ASAP
-//				if(lastElement != -1) {
-//					if(lastElement != Lua.gettop()) {
-//						throw new Error("You corrupted the stack! (" + lastElement + " != " + Lua.gettop() + ")");
-//					}
-//					
-//					Lua.pop(1);
-//				}
-				
 				pos++;
 				Lua.pushinteger(pos);
 				Lua.gettable(array.index());
-				this.lastElement = Lua.gettop();
-				return new Object(lastElement);
+				return new Object(Lua.gettop());
 			}
 
 			@Override

@@ -1,10 +1,11 @@
 package gmod.events;
 
 import gmod.Event;
+import gmod.Event.Info;
 import gmod.objects.MoveData;
 import gmod.objects.Player;
 
-@Event.Info(name = "Move")
+@Info(name = "Move")
 public class MoveEvent extends Event {
 
 	private Player player;

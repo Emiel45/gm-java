@@ -24,4 +24,8 @@ public class Entity extends Lua.Object {
 		super.callVoid("SetPos", pos);
 	}
 	
+	public Lua.Table getKeyValues() {
+		return new Lua.Table(super.callObject("GetKeyValues").index());
+	}
+	
 }

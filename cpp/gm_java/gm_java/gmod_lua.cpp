@@ -53,6 +53,34 @@ int java_process_async(lua_State *lua)
 	return 0;
 }
 
+int java_setref(lua_State *lua)
+{
+	luaL_checkany(L, 1);
+	luaL_checkany(L, 2);
+
+	lua_getglobal(L, "java");
+	lua_getfield(L, -1, "ref");
+	
+	lua_pushvalue(L, 1);
+	lua_pushvalue(L, 2);
+
+	lua_settable(L, -3);
+	return 0;
+}
+
+int java_getref(lua_State *lua)
+{
+	luaL_checkany(L, 1);
+
+	lua_getglobal(L, "java");
+	lua_getfield(L, -1, "ref");
+	
+	lua_pushvalue(L, 1);
+
+	lua_gettable(L, -2);
+	return 1;
+}
+
 int gmod_lua_init(lua_State *lua)
 {
 	/* Store lua state */
@@ -81,6 +109,20 @@ int gmod_lua_init(lua_State *lua)
 	lua_pushstring(L, "java.process_async");
 	lua_pushcfunction(L, java_process_async);
 	lua_call(L, 3, 0);
+
+	/* Register java table */
+	lua_newtable(L);
+	
+	lua_newtable(L);
+	lua_setfield(L, -2, "ref");
+	
+	lua_pushcfunction(L, java_setref);
+	lua_setfield(L, -2, "setref");
+
+	lua_pushcfunction(L, java_getref);
+	lua_setfield(L, -2, "getref");
+
+	lua_setglobal(L, "java");
 
 	return 0;
 }
@@ -274,7 +316,7 @@ void stackdump_g(lua_State* l)
  
     printf("total in stack %d\n",top);
  
-    for (i = 1; i <= top; i++)
+    for (i = top; i > 0; i--)
     {  /* repeat for each level */
         int t = lua_type(l, i);
         switch (t) {
@@ -288,7 +330,11 @@ void stackdump_g(lua_State* l)
                 printf("number: %g\n", lua_tonumber(l, i));
                 break;
             default:  /* other values */
-                printf("%s\n", lua_typename(l, t));
+				lua_getglobal(L, "tostring");
+				lua_pushvalue(L, i);
+				lua_call(L, 1, 1);
+                printf("%s\n", lua_tostring(l, -1));
+				lua_pop(L, 1);
                 break;
         }
         printf("  ");  /* put a separator */

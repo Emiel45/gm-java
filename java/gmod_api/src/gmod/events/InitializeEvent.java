@@ -1,6 +1,7 @@
 package gmod.events;
 
 import gmod.Event;
+import gmod.Event.Info;
 
-@Event.Info(name = "Initialize")
+@Info(name = "Initialize")
 public class InitializeEvent extends Event { }

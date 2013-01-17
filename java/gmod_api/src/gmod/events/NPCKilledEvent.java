@@ -1,9 +1,10 @@
 package gmod.events;
 
 import gmod.Event;
+import gmod.Event.Info;
 import gmod.objects.Entity;
 
-@Event.Info(name = "OnNPCKilled")
+@Info(name = "OnNPCKilled")
 public class NPCKilledEvent extends Event {
 
 	private Entity victim, killer, weapon;
