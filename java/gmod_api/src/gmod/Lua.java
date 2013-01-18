@@ -26,7 +26,7 @@ public class Lua {
 		private int id;
 		private Class<? extends Object> objClass;
 		
-		public Ref(T obj) {
+		private Ref(T obj) {
 			this.id = random.nextInt();
 			this.objClass = obj.getClass();
 			
@@ -38,7 +38,7 @@ public class Lua {
 		@SuppressWarnings("unchecked")
 		public T get() {
 			Lua.Table java = _G.getFieldTable("java");
-			java.invokeVoid("getref", id);
+			java.invokeObject("getref", id);
 			Lua.remove(java.index);
 
 			try {
@@ -438,7 +438,11 @@ public class Lua {
 	public static int absindex(int index) {
 		return (index > 0 || index <= REGISTRYINDEX) ? (index) : (Lua.gettop() + index + 1);
 	}
-
+	
+	public static <T extends Object> Ref<T> ref(T obj) {
+		return new Ref<T>(obj);
+	}
+	
 	public static native void lock();
 
 	public static native void unlock();
